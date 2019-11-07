@@ -31,9 +31,9 @@ window.onload = function() {
     
     function game_tick(){
         for(var i=0; i<qt_asteroids; i++){
-            // asteroids[i].getAttribute('position')['x']-=asteroid_speed;
-            // asteroids[i].getAttribute('position')['y']-=asteroid_speed;
-            // asteroids[i].getAttribute('position')['z']-=asteroid_speed;
+            //asteroids[i].getAttribute("position")['x']-=asteroid_speed;
+            //asteroids[i].getAttribute("position")['y']-=asteroid_speed;
+            asteroids[i].getAttribute("position")['z']-=asteroid_speed;
         }
     }
 
