@@ -43,7 +43,7 @@ window.onload = function() {
             // sphere.setAttribute('position', ''+Math.random() * (max - min) + min+' '+Math.random() * (max - min) + min+' '+Math.random() * (max - min) + min);
             sphere.setAttribute('position', '0 0 -10');
             sphere.setAttribute('radius', '1.25');
-            sphere.setAttribute('color', '#EF2D5E');
+            sphere.setAttribute('color', '#FF0000');
             asteroids.push(sphere);
             scene.appendChild(sphere);
         }
