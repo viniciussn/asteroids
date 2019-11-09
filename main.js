@@ -19,6 +19,10 @@ window.onload = function() {
     var asteroid_max_origem = 100;
     var asteroid_min_initial_distance = 50;
 
+    var running = false;
+
+    var asteroid_obj;
+
     /* ============================================================================================================= */
     /* criando a cena e adicionando o componente game_engine*/    
     document.body.appendChild(scene);
@@ -40,31 +44,55 @@ window.onload = function() {
     
     function game_init(){
         generate_stars();
-        generate_asteroids();
+        console.log('Carregando texturas...');    
+        load_materials().then(function(){
+            console.log('Texturas carregadas!');    
+            console.log('Criando objetos...');    
+            generate_asteroids();
+            console.log('Objetos criados!');
+            running = true;
+            console.log('Jogo iniciado!')
+        });
+
     }
     
     function game_tick(){
-        for(var i=0; i<qt_asteroids; i++){
-            asteroids[i].object3D.translateZ(asteroid_speed);
-            console.log(asteroids[i].object3D.position);
+        if(running){
+            for(var i=0; i<qt_asteroids; i++){
+                asteroids[i].translateZ(asteroid_speed);
+            }
         }
+    }
+    function load_materials(){
+        return new Promise(function(resolve){
+            var mtlLoader = new THREE.MTLLoader();
+            mtlLoader.setPath("model/"); 
+            mtlLoader.load("asteroid.mtl", function(materials){
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials( materials );
+                objLoader.setPath("model/" ); 
+                objLoader.load("asteroid.obj", function(obj){
+                    asteroid_obj = obj;
+                    resolve(true);
+                });
+            });
+        });
     }
 
     function generate_asteroids(){
         for(var i=0; i<qt_asteroids; i++){
-            var sphere = document.createElement('a-sphere');
+            var asteroid = asteroid_obj.clone();
             var x = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
             var y = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
             var z = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
 
-            sphere.object3D.position.set(x, y, z);
-            sphere.object3D.lookAt(0, 0, 0);
-            sphere.object3D.translateZ(-asteroid_min_initial_distance);
-            sphere.setAttribute('radius', asteroid_radius);
-            sphere.setAttribute('color', '#'+new THREE.Color(Math.random(), Math.random(), Math.random()).getHexString());
-            scene.appendChild(sphere);
-            asteroids.push(sphere);
-        }
+            asteroid.position.set(x, y, z);
+            asteroid.lookAt(0, 0, 0);
+            asteroid.translateZ(-asteroid_min_initial_distance);
+            scene.object3D.add(asteroid);
+            asteroids.push(asteroid);
+        } 
     }
 
     function generate_stars(){
