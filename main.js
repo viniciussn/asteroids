@@ -29,8 +29,8 @@ window.onload = function() {
     /* variáveis globais */    
     var asteroids = [];
     var qt_asteroids = 10;
-    var asteroid_speed = 0.1;
-    var colors = ["#FF0000","#0000FF","#FFFF00","#00FF00"];
+    var asteroid_speed = 0.5;
+    var asteroid_radius;
 
     
     function game_init(){
@@ -39,22 +39,21 @@ window.onload = function() {
     
     function game_tick(){
         for(var i=0; i<qt_asteroids; i++){
-            //asteroids[i].getAttribute("position")['x']-=asteroid_speed;
-            //asteroids[i].getAttribute("position")['y']-=asteroid_speed;
-            //asteroids[i].getAttribute("position")['z']-=asteroid_speed;
-            // asteroids[i].getAttribute("position")['z']-=asteroid_speed;
+            asteroids[i].object3D.lookAt(0, 0, 0);
+            asteroids[i].object3D.translateZ(asteroid_speed);
         }
     }
 
     function generate_asteroids(scene, max, min){
         for(var i=0; i<qt_asteroids; i++){
             var sphere = document.createElement('a-sphere');
-            // sphere.setAttribute('position', ''+Math.random() * (max - min) + min+' '+Math.random() * (max - min) + min+' '+Math.random() * (max - min) + min);
-            sphere.setAttribute('position',  Math.floor(Math.random()*90) +' 0 -10');
-            sphere.setAttribute('radius', '1.25');
-            sphere.setAttribute('color', colors[Math.floor(Math.random()*colors.length)]);
-            asteroids.push(sphere);
+            var x = 10*i, y = 0, z = -50;
+
+            sphere.setAttribute('position', x+' '+y+' '+z);
+            sphere.setAttribute('radius', asteroid_radius);
+            sphere.setAttribute('color', '#'+new THREE.Color(Math.random(), Math.random(), Math.random()).getHexString());
             scene.appendChild(sphere);
+            asteroids.push(sphere);
         }
     }
 };
