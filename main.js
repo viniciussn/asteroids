@@ -32,20 +32,21 @@ window.onload = function() {
     scene.appendChild(camera);
     /* ============================================================================================================= */
     /* criando céu */        
-    ceu.setAttribute('src', 'https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1504&q=80');
-    ceu.setAttribute('rotation', '0 -90 0');
+    ceu.setAttribute('color', '#000000');
     scene.appendChild(ceu);
+
    
 
     
     function game_init(){
+        generate_stars();
         generate_asteroids();
     }
     
     function game_tick(){
         for(var i=0; i<qt_asteroids; i++){
             asteroids[i].object3D.translateZ(asteroid_speed);
-            console.log(asteroids[0].object3D.position);
+            console.log(asteroids[i].object3D.position);
         }
     }
 
@@ -63,6 +64,22 @@ window.onload = function() {
             sphere.setAttribute('color', '#'+new THREE.Color(Math.random(), Math.random(), Math.random()).getHexString());
             scene.appendChild(sphere);
             asteroids.push(sphere);
+        }
+    }
+
+    function generate_stars(){
+        for(var i=0; i<5000; i++){
+            var sphere = document.createElement('a-sphere');
+            var x = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
+            var y = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
+            var z = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
+
+            sphere.object3D.position.set(x, y, z);
+            sphere.object3D.lookAt(0, 0, 0);
+            sphere.object3D.translateZ(-1000);
+            sphere.setAttribute('radius', 1);
+            sphere.setAttribute('color', '#ffffff');
+            scene.appendChild(sphere);
         }
     }
 };
