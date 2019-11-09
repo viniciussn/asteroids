@@ -12,8 +12,9 @@ window.onload = function() {
     var ceu = document.createElement('a-sky');
 
     var asteroids = [];
-    var qt_asteroids = 100;
-    var asteroid_speed = 0.5;
+    var asteroids_visible = [];
+    var qt_asteroids = Math.floor(Math.random()*100);
+    var asteroid_speed = 0.3;
     var asteroid_radius = 1;
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
@@ -58,11 +59,13 @@ window.onload = function() {
     
     function game_tick(){
         if(running){
+        	document.onkeydown = press_keyboard;
             for(var i=0; i<qt_asteroids; i++){
                 asteroids[i].translateZ(asteroid_speed);
             }
         }
     }
+
     function load_materials(){
         return new Promise(function(resolve){
             var mtlLoader = new THREE.MTLLoader();
@@ -92,6 +95,7 @@ window.onload = function() {
             asteroid.translateZ(-asteroid_min_initial_distance);
             scene.object3D.add(asteroid);
             asteroids.push(asteroid);
+            asteroids_visible.push(1);
         } 
     }
 
@@ -104,11 +108,24 @@ window.onload = function() {
 
             sphere.object3D.position.set(x, y, z);
             sphere.object3D.lookAt(0, 0, 0);
-            sphere.object3D.translateZ(-1000);
-            sphere.setAttribute('radius', 1);
+            sphere.object3D.translateZ(-100);
+            sphere.setAttribute('radius', 0.1);
             sphere.setAttribute('color', '#ffffff');
             scene.appendChild(sphere);
         }
     }
+
+    function press_keyboard(evento) {
+      if (String.fromCharCode(evento.keyCode) == "O"){
+      	console.log('Apertou O!');
+      }
+      if (evento.keyCode == 32){
+      	console.log('Apertou Espaço');
+      }
+	}
+
+	
+
+
 };
 
