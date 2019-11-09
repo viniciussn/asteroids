@@ -42,6 +42,7 @@ window.onload = function() {
             //asteroids[i].getAttribute("position")['x']-=asteroid_speed;
             //asteroids[i].getAttribute("position")['y']-=asteroid_speed;
             //asteroids[i].getAttribute("position")['z']-=asteroid_speed;
+            // asteroids[i].getAttribute("position")['z']-=asteroid_speed;
         }
     }
 
