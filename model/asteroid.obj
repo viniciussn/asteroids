@@ -1,6 +1,6 @@
-# Blender v2.79 (sub 0) OBJ File: ''
+# Blender v2.79 (sub 0) OBJ File: 'asteroid.blend'
 # www.blender.org
-mtllib asteroid.mtl
+mtllib asteroid2.mtl
 o Cube
 v 0.000000 -0.711032 -0.000000
 v 0.018989 -0.724459 -0.000000
