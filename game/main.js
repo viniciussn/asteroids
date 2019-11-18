@@ -13,7 +13,7 @@ window.onload = function() {
 
     var asteroids = [];
     var asteroids_visible = [];
-    var qt_asteroids = Math.floor(Math.random()*100);
+    var qt_asteroids = 100;
     var asteroid_speed = 0.3;
     var asteroid_radius = 1;
     var asteroid_min_origem = -100;
@@ -23,6 +23,7 @@ window.onload = function() {
     var running = false;
 
     var asteroid_obj;
+    var nave;
 
     /* ============================================================================================================= */
     /* criando a cena e adicionando o componente game_engine*/    
@@ -33,7 +34,7 @@ window.onload = function() {
     /* ============================================================================================================= */
     /* configurando a câmera */        
     camera.setAttribute('position', '0 0 0');
-    camera.setAttribute('wasd-controls-enabled', 'false');
+    // camera.setAttribute('wasd-controls-enabled', 'false');
     scene.appendChild(camera);
     /* ============================================================================================================= */
     /* criando céu */        
@@ -48,9 +49,11 @@ window.onload = function() {
         console.log('Carregando texturas...');    
         load_materials().then(function(){
             console.log('Texturas carregadas!');    
+
             console.log('Criando objetos...');    
-            generate_asteroids();
+            generate_objects();
             console.log('Objetos criados!');
+            
             running = true;
             console.log('Jogo iniciado!')
         });
@@ -67,23 +70,49 @@ window.onload = function() {
     }
 
     function load_materials(){
-        return new Promise(function(resolve){
+        var promises = [];
+
+        promises.push(new Promise(function(resolve){
             var mtlLoader = new THREE.MTLLoader();
-            mtlLoader.setPath("model/"); 
-            mtlLoader.load("asteroid.mtl", function(materials){
+            mtlLoader.setPath('model/'); 
+            mtlLoader.load('nave.mtl', function(materials){
                 materials.preload();
                 var objLoader = new THREE.OBJLoader();
                 objLoader.setMaterials( materials );
-                objLoader.setPath("model/" ); 
-                objLoader.load("asteroid.obj", function(obj){
+                objLoader.setPath('model/' ); 
+                objLoader.load('nave.obj', function(obj){
+                    console.log('textura nave caregada!')
+                    nave = obj;
+                    resolve(true);
+                });
+            });
+        }));
+
+        promises.push(new Promise(function(resolve){
+            var mtlLoader = new THREE.MTLLoader();
+            mtlLoader.setPath('model/'); 
+            mtlLoader.load('asteroid.mtl', function(materials){
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials( materials );
+                objLoader.setPath('model/' ); 
+                objLoader.load('asteroid.obj', function(obj){
+                    console.log('textura asteroid carregada!')
                     asteroid_obj = obj;
                     resolve(true);
                 });
             });
+        }));
+
+        return new Promise(function(resolve){
+            Promise.all(promises).then(function(){
+                resolve(true);
+            });
         });
     }
 
-    function generate_asteroids(){
+    function generate_objects(){
+        /* ASTEROIDS */
         for(var i=0; i<qt_asteroids; i++){
             var asteroid = asteroid_obj.clone();
             var x = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
@@ -97,6 +126,11 @@ window.onload = function() {
             asteroids.push(asteroid);
             asteroids_visible.push(1);
         } 
+
+        /* NAVE */
+        nave.position.set(0, 0, 0);
+        scene.object3D.add(nave);
+
     }
 
     function generate_stars(){
@@ -116,7 +150,7 @@ window.onload = function() {
     }
 
     function press_keyboard(evento) {
-      if (String.fromCharCode(evento.keyCode) == "O"){
+      if (String.fromCharCode(evento.keyCode) == 'O'){
       	console.log('Apertou O!');
       }
       if (evento.keyCode == 32){
