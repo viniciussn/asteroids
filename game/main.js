@@ -13,13 +13,14 @@ window.onload = function() {
 
     var asteroids = [];
     var lasers = [];
-    var asteroids_visible = [];
     var qt_asteroids = 100;
     var asteroid_speed = 0.3;
     var laser_speed = 1;
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
     var asteroid_min_initial_distance = 50;
+    var x_nave = 0;
+    var y_nave = 0;
 
     var running = false;
 
@@ -56,6 +57,9 @@ window.onload = function() {
             generate_objects();
             console.log('Objetos criados!');
             
+            generate_target();
+            console.log('Mira criada');
+
             running = true;
             console.log('Jogo iniciado!')
         });
@@ -64,10 +68,14 @@ window.onload = function() {
     
     function game_tick(){
         if(running){
-            for(var i=0; i<qt_asteroids; i++){
+            for(var i = 0; i < qt_asteroids; i++){
                 asteroids[i].translateZ(asteroid_speed);
+                //Tirar a visibilidade do asteroide
+                if(abs(asteroids[i].position.z)<1.5){
+                	
+                }
             }
-            for(var i=0; i< lasers.length; i++){
+            for(var i = 0; i < lasers.length; i++){
                 lasers[i].translateZ(laser_speed);
             }
         }
@@ -144,7 +152,6 @@ window.onload = function() {
             asteroid.translateZ(-asteroid_min_initial_distance);
             scene.object3D.add(asteroid);
             asteroids.push(asteroid);
-            asteroids_visible.push(1);
         } 
 
         /* NAVE */
@@ -172,16 +179,29 @@ window.onload = function() {
         }
     }
 
+    function generate_target(){
+    	var sphere = document.createElement('a-sphere');
+    	sphere.object3D.position.set(0, 0,0);
+        sphere.object3D.lookAt(0, 0, 0);
+        sphere.object3D.translateZ(-15);
+        sphere.object3D.translateY(1);
+        sphere.setAttribute('radius', 0.2);
+        sphere.setAttribute('color', '#39ff14');
+        camera.appendChild(sphere);
+    }
+
     function disparar(){
         var laser = laser_obj.clone() ;
         
-        laser.position.set(0, 0, -10);
+        laser.position.set(0, 0, 2);
         laser.updateMatrix();
         laser.rotation.set(Math.PI/2, 0, 0); 
         
+        laser.up.set(1 , 0 , 0);
         var lookAtVector = new THREE.Vector3(0,0, -1);
         lookAtVector.applyQuaternion(camera.object3D.quaternion);
         laser.lookAt(lookAtVector);
+
 
         var light = new THREE.PointLight( 0xff0000, 1, 100 );
         laser.add(light);
@@ -197,7 +217,7 @@ window.onload = function() {
       	console.log('Apertou O!');
       }
       if (evento.keyCode == 32){
-          console.log('Apertou Espaço');
+          console.log('Piu!');
           disparar();
       }
 	}
