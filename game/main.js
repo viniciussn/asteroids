@@ -12,10 +12,11 @@ window.onload = function() {
     var ceu = document.createElement('a-sky');
 
     var asteroids = [];
+    var lasers = [];
     var asteroids_visible = [];
     var qt_asteroids = 100;
     var asteroid_speed = 0.3;
-    var asteroid_radius = 1;
+    var laser_speed = 1;
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
     var asteroid_min_initial_distance = 50;
@@ -23,6 +24,7 @@ window.onload = function() {
     var running = false;
 
     var asteroid_obj;
+    var laser_obj;
     var nave;
 
     /* ============================================================================================================= */
@@ -41,10 +43,10 @@ window.onload = function() {
     ceu.setAttribute('color', '#000000');
     scene.appendChild(ceu);
 
-   
-
+    document.onkeydown = press_keyboard;
     
     function game_init(){
+        
         generate_stars();
         console.log('Carregando texturas...');    
         load_materials().then(function(){
@@ -62,12 +64,12 @@ window.onload = function() {
     
     function game_tick(){
         if(running){
-        	document.onkeydown = press_keyboard;
             for(var i=0; i<qt_asteroids; i++){
                 asteroids[i].translateZ(asteroid_speed);
             }
-            console.log(camera.object3D.position);
-            console.log(camera.object3D.rotation);
+            for(var i=0; i< lasers.length; i++){
+                lasers[i].translateZ(laser_speed);
+            }
         }
     }
 
@@ -105,6 +107,22 @@ window.onload = function() {
                 });
             });
         }));
+        
+        promises.push(new Promise(function(resolve){
+            var mtlLoader = new THREE.MTLLoader();
+            mtlLoader.setPath('model/laser/'); 
+            mtlLoader.load('laser.mtl', function(materials){
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials( materials );
+                objLoader.setPath('model/laser/' ); 
+                objLoader.load('laser.obj', function(obj){
+                    console.log('textura laser carregada!')
+                    laser_obj = obj;
+                    resolve(true);
+                });
+            });
+        }));
 
         return new Promise(function(resolve){
             Promise.all(promises).then(function(){
@@ -132,12 +150,9 @@ window.onload = function() {
         /* NAVE */
         nave.position.set(0, 0, 2);
         nave.updateMatrix();
-        nave.rotation.set(0,  Math.PI, 0);
-        
-        
+        nave.rotation.set(0,  Math.PI, 0);                
         camera.object3D.add(nave);
-        console.log(camera.object3D.children);
-
+       
     }
 
     function generate_stars(){
@@ -153,7 +168,28 @@ window.onload = function() {
             sphere.setAttribute('radius', 0.1);
             sphere.setAttribute('color', '#ffffff');
             scene.appendChild(sphere);
+            
         }
+    }
+
+    function disparar(){
+        var laser = laser_obj.clone() ;
+        
+        laser.position.set(0, 0, -10);
+        laser.updateMatrix();
+        laser.rotation.set(Math.PI/2, 0, 0); 
+        
+        var lookAtVector = new THREE.Vector3(0,0, -1);
+        lookAtVector.applyQuaternion(camera.object3D.quaternion);
+        laser.lookAt(lookAtVector);
+
+        var light = new THREE.PointLight( 0xff0000, 1, 100 );
+        laser.add(light);
+
+        scene.object3D.add(laser);
+        lasers.push(laser);
+
+
     }
 
     function press_keyboard(evento) {
@@ -161,12 +197,10 @@ window.onload = function() {
       	console.log('Apertou O!');
       }
       if (evento.keyCode == 32){
-      	console.log('Apertou Espaço');
+          console.log('Apertou Espaço');
+          disparar();
       }
 	}
-
-	
-
 
 };
 
