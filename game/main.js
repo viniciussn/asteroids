@@ -66,6 +66,8 @@ window.onload = function() {
             for(var i=0; i<qt_asteroids; i++){
                 asteroids[i].translateZ(asteroid_speed);
             }
+            console.log(camera.object3D.position);
+            console.log(camera.object3D.rotation);
         }
     }
 
@@ -74,13 +76,13 @@ window.onload = function() {
 
         promises.push(new Promise(function(resolve){
             var mtlLoader = new THREE.MTLLoader();
-            mtlLoader.setPath('model/'); 
-            mtlLoader.load('nave.mtl', function(materials){
+            mtlLoader.setPath('model/nave/'); 
+            mtlLoader.load('HumanSpaceFighter.mtl', function(materials){
                 materials.preload();
                 var objLoader = new THREE.OBJLoader();
                 objLoader.setMaterials( materials );
-                objLoader.setPath('model/' ); 
-                objLoader.load('nave.obj', function(obj){
+                objLoader.setPath('model/nave/' ); 
+                objLoader.load('HumanSpaceFighter.obj', function(obj){
                     console.log('textura nave caregada!')
                     nave = obj;
                     resolve(true);
@@ -128,8 +130,13 @@ window.onload = function() {
         } 
 
         /* NAVE */
-        nave.position.set(0, 0, 0);
-        scene.object3D.add(nave);
+        nave.position.set(0, 0, 2);
+        nave.updateMatrix();
+        nave.rotation.set(0,  Math.PI, 0);
+        
+        
+        camera.object3D.add(nave);
+        console.log(camera.object3D.children);
 
     }
 
