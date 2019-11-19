@@ -70,10 +70,11 @@ window.onload = function() {
         if(running){
             for(var i = 0; i < qt_asteroids; i++){
                 asteroids[i].translateZ(asteroid_speed);
-                //Tirar a visibilidade do asteroide
+                /*
                 if(abs(asteroids[i].position.z)<1.5){
-                	
+                	asteroids[i].visible = false;
                 }
+                */
             }
             for(var i = 0; i < lasers.length; i++){
                 lasers[i].translateZ(laser_speed);
