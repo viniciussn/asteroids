@@ -13,7 +13,7 @@ window.onload = function() {
 
     var asteroids = [];
     var lasers = [];
-    var qt_asteroids = 100;
+    var qt_asteroids = 1;
     var asteroid_speed = 0.3;
     var laser_speed = 1;
     var asteroid_min_origem = -100;
@@ -194,7 +194,7 @@ window.onload = function() {
     function disparar(){
         var laser = laser_obj.clone() ;
         
-        laser.position.set(0, 0, 2);
+        laser.position.set(camera.object3D.position.x, camera.object3D.position.y, camera.object3D.position.z);
         laser.updateMatrix();
         laser.rotation.set(Math.PI/2, 0, 0); 
         
@@ -202,6 +202,7 @@ window.onload = function() {
         var lookAtVector = new THREE.Vector3(0,0, -1);
         lookAtVector.applyQuaternion(camera.object3D.quaternion);
         laser.lookAt(lookAtVector);
+        laser.updateMatrix();
 
 
         var light = new THREE.PointLight( 0xff0000, 1, 100 );
