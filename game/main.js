@@ -13,8 +13,8 @@ window.onload = function() {
 
     var asteroids = [];
     var lasers = [];
-    var qt_asteroids = 1;
-    var asteroid_speed = 0.3;
+    var qt_asteroids = 10;
+    var asteroid_speed = 0.1;
     var laser_speed = 1;
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
@@ -151,6 +151,13 @@ window.onload = function() {
             asteroid.position.set(x, y, z);
             asteroid.lookAt(0, 0, 0);
             asteroid.translateZ(-asteroid_min_initial_distance);
+
+            //asteroid.setAttribute('static-body physics-collider','ignoreSleep: true');
+
+            asteroid.addEventListener("collisions", (e)=>{
+            	console.log("Colidiu");
+
+            })
             scene.object3D.add(asteroid);
             asteroids.push(asteroid);
         } 
@@ -198,7 +205,7 @@ window.onload = function() {
         laser.updateMatrix();
         laser.rotation.set(Math.PI/2, 0, 0); 
         
-        laser.up.set(1 , 0 , 0);
+        //laser.up.set(1 , 0 , 0);
         var lookAtVector = new THREE.Vector3(0,0, -1);
         lookAtVector.applyQuaternion(camera.object3D.quaternion);
         laser.lookAt(lookAtVector);
