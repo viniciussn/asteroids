@@ -12,13 +12,14 @@ window.onload = function() {
     var ceu = document.createElement('a-sky');
 
     var asteroids = [];
+    var spheres = [];
     var lasers = [];
     var qt_asteroids = 10;
     var asteroid_speed = 0.1;
     var laser_speed = 1;
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
-    var asteroid_min_initial_distance = 50;
+    var asteroid_min_initial_distance = -10;
     var x_nave = 0;
     var y_nave = 0;
 
@@ -70,16 +71,31 @@ window.onload = function() {
         if(running){
             for(var i = 0; i < qt_asteroids; i++){
                 asteroids[i].translateZ(asteroid_speed);
+                spheres[i].object3D.translateZ(asteroid_speed);
                 /*
                 if(abs(asteroids[i].position.z)<1.5){
                 	asteroids[i].visible = false;
                 }
                 */
+                detect_collision(i);
             }
             for(var i = 0; i < lasers.length; i++){
-                lasers[i].translateZ(laser_speed);
+                lasers[i].object3D.translateZ(laser_speed);
             }
         }
+    }
+
+
+    function detect_collision(asteroid){
+    	var distance;
+    	for(var j = 0; j < lasers.length; j++){
+    		distance = Math.sqrt(Math.pow(asteroids[asteroid].position.x-lasers[j].object3D.position.x,2)+Math.pow(asteroids[asteroid].position.y-lasers[j].object3D.position.y,2)
+    		+Math.pow(asteroids[asteroid].position.z-lasers[j].object3D.position.z,2));
+    		if(distance<1){
+    			console.log("Colidiu");
+    			asteroids[asteroid].visible = false;
+    		}
+    	}
     }
 
     function load_materials(){
@@ -148,19 +164,24 @@ window.onload = function() {
             var y = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
             var z = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
 
+            var sphere = document.createElement('a-sphere');
+            sphere.object3D.position.set(x, y, z);
+            sphere.object3D.lookAt(0, 0, 0);
+            sphere.object3D.translateZ(-asteroid_min_initial_distance);
+            spheres.push(sphere);
+
+
             asteroid.position.set(x, y, z);
             asteroid.lookAt(0, 0, 0);
             asteroid.translateZ(-asteroid_min_initial_distance);
 
             //asteroid.setAttribute('static-body physics-collider','ignoreSleep: true');
 
-            asteroid.addEventListener("collisions", (e)=>{
-            	console.log("Colidiu");
-
-            })
+            
             scene.object3D.add(asteroid);
             asteroids.push(asteroid);
         } 
+
 
         /* NAVE */
         nave.position.set(0, 0, 2);
@@ -192,30 +213,33 @@ window.onload = function() {
     	sphere.object3D.position.set(0, 0,0);
         sphere.object3D.lookAt(0, 0, 0);
         sphere.object3D.translateZ(-15);
-        sphere.object3D.translateY(1);
+        sphere.object3D.translateY(0);
         sphere.setAttribute('radius', 0.2);
         sphere.setAttribute('color', '#39ff14');
         camera.appendChild(sphere);
     }
 
     function disparar(){
-        var laser = laser_obj.clone() ;
+        var laser = document.createElement('a-sphere');//laser_obj.clone() ;
+
+        laser.setAttribute('color', '#ff0000');
+        laser.setAttribute('radius',0.2);
         
-        laser.position.set(camera.object3D.position.x, camera.object3D.position.y, camera.object3D.position.z);
-        laser.updateMatrix();
-        laser.rotation.set(Math.PI/2, 0, 0); 
+        laser.object3D.position.set(camera.object3D.position.x, camera.object3D.position.y, camera.object3D.position.z);
+        //laser.updateMatrix();
+        //laser.rotation.set(Math.PI/2, 0, 0); 
         
         //laser.up.set(1 , 0 , 0);
         var lookAtVector = new THREE.Vector3(0,0, -1);
         lookAtVector.applyQuaternion(camera.object3D.quaternion);
-        laser.lookAt(lookAtVector);
-        laser.updateMatrix();
+        laser.object3D.lookAt(lookAtVector);
+        laser.object3D.updateMatrix();
 
 
         var light = new THREE.PointLight( 0xff0000, 1, 100 );
-        laser.add(light);
+        //laser.object3D.add(light);
 
-        scene.object3D.add(laser);
+        scene.appendChild(laser);//object3D.add(laser);
         lasers.push(laser);
 
 
