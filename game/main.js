@@ -12,14 +12,13 @@ window.onload = function() {
     var ceu = document.createElement('a-sky');
 
     var asteroids = [];
-    var spheres = [];
     var lasers = [];
     var qt_asteroids = 10;
     var asteroid_speed = 0.1;
     var laser_speed = 1;
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
-    var asteroid_min_initial_distance = -10;
+    var asteroid_min_initial_distance = 20;
     var x_nave = 0;
     var y_nave = 0;
 
@@ -71,7 +70,6 @@ window.onload = function() {
         if(running){
             for(var i = 0; i < qt_asteroids; i++){
                 asteroids[i].translateZ(asteroid_speed);
-                spheres[i].object3D.translateZ(asteroid_speed);
                 /*
                 if(abs(asteroids[i].position.z)<1.5){
                 	asteroids[i].visible = false;
@@ -163,12 +161,6 @@ window.onload = function() {
             var x = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
             var y = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
             var z = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
-
-            var sphere = document.createElement('a-sphere');
-            sphere.object3D.position.set(x, y, z);
-            sphere.object3D.lookAt(0, 0, 0);
-            sphere.object3D.translateZ(-asteroid_min_initial_distance);
-            spheres.push(sphere);
 
 
             asteroid.position.set(x, y, z);
