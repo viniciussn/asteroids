@@ -13,7 +13,7 @@ window.onload = function() {
 
     var asteroids = [];
     var lasers = [];
-    var qt_asteroids = 10;
+    var qt_asteroids = 100;
     var asteroid_speed = 0.3;
     var laser_speed = 1;
     var asteroid_min_origem = -100;
@@ -34,6 +34,7 @@ window.onload = function() {
     /* ============================================================================================================= */
     /* configurando a câmera */        
     camera.setAttribute('position', '0 0 0');
+    camera.setAttribute('look-controls', 'pointerLockEnabled: true;'); 
     // camera.setAttribute('wasd-controls-enabled', 'false');
     scene.appendChild(camera);
     /* ============================================================================================================= */
