@@ -13,19 +13,16 @@ window.onload = function() {
 
     var asteroids = [];
     var lasers = [];
-    var qt_asteroids = 10;
-    var asteroid_speed = 0.1;
+    var qt_asteroids = 100;
+    var asteroid_speed = 0.3;
     var laser_speed = 1;
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
     var asteroid_min_initial_distance = 20;
-    var x_nave = 0;
-    var y_nave = 0;
 
     var running = false;
 
     var asteroid_obj;
-    var laser_obj;
     var nave;
 
     /* ============================================================================================================= */
@@ -117,12 +114,12 @@ window.onload = function() {
 
         promises.push(new Promise(function(resolve){
             var mtlLoader = new THREE.MTLLoader();
-            mtlLoader.setPath('model/'); 
+            mtlLoader.setPath('model/asteroid/'); 
             mtlLoader.load('asteroid.mtl', function(materials){
                 materials.preload();
                 var objLoader = new THREE.OBJLoader();
                 objLoader.setMaterials( materials );
-                objLoader.setPath('model/' ); 
+                objLoader.setPath('model/asteroid/' ); 
                 objLoader.load('asteroid.obj', function(obj){
                     console.log('textura asteroid carregada!')
                     asteroid_obj = obj;
@@ -131,22 +128,6 @@ window.onload = function() {
             });
         }));
         
-        promises.push(new Promise(function(resolve){
-            var mtlLoader = new THREE.MTLLoader();
-            mtlLoader.setPath('model/laser/'); 
-            mtlLoader.load('laser.mtl', function(materials){
-                materials.preload();
-                var objLoader = new THREE.OBJLoader();
-                objLoader.setMaterials( materials );
-                objLoader.setPath('model/laser/' ); 
-                objLoader.load('laser.obj', function(obj){
-                    console.log('textura laser carregada!')
-                    laser_obj = obj;
-                    resolve(true);
-                });
-            });
-        }));
-
         return new Promise(function(resolve){
             Promise.all(promises).then(function(){
                 resolve(true);
@@ -212,26 +193,21 @@ window.onload = function() {
     }
 
     function disparar(){
-        var laser = document.createElement('a-sphere');//laser_obj.clone() ;
+        var laser = document.createElement('a-sphere');
 
         laser.setAttribute('color', '#ff0000');
-        laser.setAttribute('radius',0.2);
+        laser.setAttribute('radius', 0.2);
         
-        laser.object3D.position.set(camera.object3D.position.x, camera.object3D.position.y, camera.object3D.position.z);
-        //laser.updateMatrix();
-        //laser.rotation.set(Math.PI/2, 0, 0); 
-        
-        //laser.up.set(1 , 0 , 0);
         var lookAtVector = new THREE.Vector3(0,0, -1);
         lookAtVector.applyQuaternion(camera.object3D.quaternion);
-        laser.object3D.lookAt(lookAtVector);
-        laser.object3D.updateMatrix();
 
+        laser.object3D.lookAt(lookAtVector);
+        laser.object3D.position.set(camera.object3D.position.x, camera.object3D.position.y, camera.object3D.position.z);
 
         var light = new THREE.PointLight( 0xff0000, 1, 100 );
-        //laser.object3D.add(light);
+        laser.object3D.add(light);
 
-        scene.appendChild(laser);//object3D.add(laser);
+        scene.appendChild(laser);
         lasers.push(laser);
 
 
