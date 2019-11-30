@@ -13,7 +13,7 @@ window.onload = function() {
 
     var asteroids = [];
     var lasers = [];
-    var qt_asteroids = 100;
+    var qt_asteroids = 10;
     var asteroid_speed = 0.3;
     var laser_speed = 1;
     var asteroid_min_origem = -100;
@@ -194,17 +194,23 @@ window.onload = function() {
 
     function disparar(){
         var laser = document.createElement('a-sphere');
-
+        // laser_speed = 0.1;
         laser.setAttribute('color', '#ff0000');
         laser.setAttribute('radius', 0.2);
         
         var lookAtVector = new THREE.Vector3(0,0, -1);
         lookAtVector.applyQuaternion(camera.object3D.quaternion);
 
-        laser.object3D.lookAt(lookAtVector);
-        laser.object3D.position.set(camera.object3D.position.x, camera.object3D.position.y, camera.object3D.position.z);
+        var rotacao = new THREE.Matrix4();
+        rotacao.makeRotationFromQuaternion(camera.object3D.quaternion);
 
-        var light = new THREE.PointLight( 0xff0000, 1, 100 );
+        laser.object3D.quaternion.setFromRotationMatrix(rotacao);
+        laser.object3D.lookAt(lookAtVector);
+        laser.object3D.translateX(camera.object3D.position.x-2);
+        laser.object3D.translateY(camera.object3D.position.y-0.7);
+        laser.object3D.translateZ(camera.object3D.position.z-3.6);
+
+        var light = new THREE.PointLight(0xff0000, 1, 100);
         laser.object3D.add(light);
 
         scene.appendChild(laser);
