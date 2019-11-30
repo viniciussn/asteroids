@@ -194,7 +194,6 @@ window.onload = function() {
 
     function disparar(){
         var laser = document.createElement('a-sphere');
-        // laser_speed = 0.1;
         laser.setAttribute('color', '#ff0000');
         laser.setAttribute('radius', 0.2);
         
@@ -206,16 +205,37 @@ window.onload = function() {
 
         laser.object3D.quaternion.setFromRotationMatrix(rotacao);
         laser.object3D.lookAt(lookAtVector);
-        laser.object3D.translateX(camera.object3D.position.x-2);
-        laser.object3D.translateY(camera.object3D.position.y-0.7);
-        laser.object3D.translateZ(camera.object3D.position.z-3.6);
 
-        var light = new THREE.PointLight(0xff0000, 1, 100);
-        laser.object3D.add(light);
+        laser.object3D.position.x = camera.object3D.position.x;
+        laser.object3D.position.y = camera.object3D.position.y;
+        laser.object3D.position.z = camera.object3D.position.z;
+        
+        laser.object3D.translateX(-2);
+        laser.object3D.translateY(-0.7);
+        laser.object3D.translateZ(2.6); //a ponta do canhão é 3.6
+
+        // var light = new THREE.PointLight(0xff0000, 1, 100);
+        // laser.object3D.add(light);
+        
+        var laser2 = document.createElement('a-sphere');
+        laser2.setAttribute('color', '#ff0000');
+        laser2.setAttribute('radius', 0.2);
+        
+        laser2.object3D.quaternion.setFromRotationMatrix(rotacao);
+        laser2.object3D.lookAt(lookAtVector);
+
+        laser2.object3D.position.x = camera.object3D.position.x;
+        laser2.object3D.position.y = camera.object3D.position.y;
+        laser2.object3D.position.z = camera.object3D.position.z;
+
+        laser2.object3D.translateX(2);
+        laser2.object3D.translateY(-0.7);
+        laser2.object3D.translateZ(2.6); //a ponta do canhão é 3.6
 
         scene.appendChild(laser);
+        scene.appendChild(laser2);
         lasers.push(laser);
-
+        lasers.push(laser2);
 
     }
 
