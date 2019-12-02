@@ -19,11 +19,16 @@ window.onload = function() {
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
     var asteroid_min_initial_distance = 20;
+    var collisions = 0;
+
 
     var running = false;
 
     var asteroid_obj;
     var nave;
+
+    var mesh,mesh_inicio;
+
 
     /* ============================================================================================================= */
     /* criando a cena e adicionando o componente game_engine*/    
@@ -42,6 +47,9 @@ window.onload = function() {
     ceu.setAttribute('color', '#000000');
     scene.appendChild(ceu);
 
+
+
+
     document.onkeydown = press_keyboard;
     
     function game_init(){
@@ -58,8 +66,13 @@ window.onload = function() {
             generate_target();
             console.log('Mira criada');
 
-            running = true;
-            console.log('Jogo iniciado!')
+            change_score();
+            console.log('Textos score criado');
+
+
+            initial_text();
+
+            	
         });
 
     }
@@ -68,11 +81,6 @@ window.onload = function() {
         if(running){
             for(var i = 0; i < qt_asteroids; i++){
                 asteroids[i].translateZ(asteroid_speed);
-                /*
-                if(abs(asteroids[i].position.z)<1.5){
-                	asteroids[i].visible = false;
-                }
-                */
                 detect_collision(i);
             }
             for(var i = 0; i < lasers.length; i++){
@@ -81,14 +89,86 @@ window.onload = function() {
         }
     }
 
+    function initial_text(){
+
+    	scene.object3D.remove(mesh);
+    	var loader = new THREE.FontLoader();
+
+		loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
+
+			var textGeo = new THREE.TextBufferGeometry( "Welcome to the Asteroids\n              Press Enter!", {
+						font: font,
+						size: 10,
+						height: 5,
+						curveSegments: 1.2,
+						bevelThickness: 0.2,
+						bevelSize: 0.5,
+						bevelEnabled: true
+			} );
+
+				textGeo.computeBoundingBox();
+				var centerOffset = - 0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
+				var textMaterial = new THREE.MeshPhongMaterial( { color: 0xfff000, specular: 0xffffff } );
+				mesh_inicio = new THREE.Mesh( textGeo, textMaterial );
+				mesh_inicio.position.x = -80;//centerOffset;
+				mesh_inicio.position.y = 20;//-250 + 67;
+				mesh_inicio.position.z = -100;
+				mesh_inicio.castShadow = true;
+				mesh_inicio.receiveShadow = true;
+				scene.object3D.add( mesh_inicio );
+				//camera.object3D.add( mesh );
+				
+
+		} );
+
+
+    }
+
+
+    function change_score(){
+
+    	scene.object3D.remove(mesh);
+    	var loader = new THREE.FontLoader();
+
+		loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
+
+			var textGeo = new THREE.TextBufferGeometry( "Score: "+collisions, {
+						font: font,
+						size: 10,
+						height: 5,
+						curveSegments: 1.2,
+						bevelThickness: 0.2,
+						bevelSize: 0.5,
+						bevelEnabled: true
+			} );
+
+				textGeo.computeBoundingBox();
+				var centerOffset = - 0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
+				var textMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff } );
+				mesh = new THREE.Mesh( textGeo, textMaterial );
+				mesh.position.x = 100;//centerOffset;
+				mesh.position.y = 80;//-250 + 67;
+				mesh.position.z = -150;
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				scene.object3D.add( mesh );
+				//camera.object3D.add( mesh );
+				
+
+		} );
+
+
+    }
 
     function detect_collision(asteroid){
     	var distance;
     	for(var j = 0; j < lasers.length; j++){
     		distance = Math.sqrt(Math.pow(asteroids[asteroid].position.x-lasers[j].object3D.position.x,2)+Math.pow(asteroids[asteroid].position.y-lasers[j].object3D.position.y,2)
     		+Math.pow(asteroids[asteroid].position.z-lasers[j].object3D.position.z,2));
-    		if(distance<1){
+    		if(distance<1 && asteroids[asteroid].visible == true){
     			console.log("Colidiu");
+    			collisions++;
+    			change_score();
     			asteroids[asteroid].visible = false;
     		}
     	}
@@ -148,10 +228,6 @@ window.onload = function() {
             asteroid.position.set(x, y, z);
             asteroid.lookAt(0, 0, 0);
             asteroid.translateZ(-asteroid_min_initial_distance);
-
-            //asteroid.setAttribute('static-body physics-collider','ignoreSleep: true');
-
-            
             scene.object3D.add(asteroid);
             asteroids.push(asteroid);
         } 
@@ -194,6 +270,7 @@ window.onload = function() {
     }
 
     function disparar(){
+    	//Laser Esquerda
         var laser = document.createElement('a-sphere');
         laser.setAttribute('color', '#ff0000');
         laser.setAttribute('radius', 0.2);
@@ -215,9 +292,7 @@ window.onload = function() {
         laser.object3D.translateY(-0.7);
         laser.object3D.translateZ(2.6); //a ponta do canhão é 3.6
 
-        // var light = new THREE.PointLight(0xff0000, 1, 100);
-        // laser.object3D.add(light);
-        
+        //Laser Direita 
         var laser2 = document.createElement('a-sphere');
         laser2.setAttribute('color', '#ff0000');
         laser2.setAttribute('radius', 0.2);
@@ -244,11 +319,19 @@ window.onload = function() {
       if (String.fromCharCode(evento.keyCode) == 'O'){
       	console.log('Apertou O!');
       }
+      if (evento.keyCode == 13){//enter
+      	  scene.object3D.remove(mesh_inicio);
+          running = true;
+          console.log('Jogo iniciado!')
+      }
       if (evento.keyCode == 32){
-          console.log('Piu!');
+          //console.log('Piu!');
           disparar();
       }
 	}
+
+
+
 
 };
 
