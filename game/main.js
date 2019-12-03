@@ -14,7 +14,7 @@ window.onload = function() {
     var asteroids = [];
     var lasers = [];
     var qt_asteroids = 100;
-    var asteroid_speed = 0.3;
+    var asteroid_speed = 0.1;
     var laser_speed = 1;
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
@@ -22,12 +22,16 @@ window.onload = function() {
     var collisions = 0;
 
 
+    var y_height = 90;
+    var z_height = -150;
+
+
     var running = false;
 
     var asteroid_obj;
     var nave;
 
-    var mesh,mesh_inicio;
+    var score,initial_msg;
 
 
     /* ============================================================================================================= */
@@ -69,6 +73,9 @@ window.onload = function() {
             change_score();
             console.log('Textos score criado');
 
+            create_lives();
+            console.log('Criou as vidas');
+
 
             initial_text();
 
@@ -89,14 +96,44 @@ window.onload = function() {
         }
     }
 
+    function create_lives(){
+
+    	var loader = new THREE.TextureLoader();
+    	loader.setCrossOrigin('');
+		var material = new THREE.MeshLambertMaterial({
+		  map: loader.load('https://upload.wikimedia.org/wikipedia/commons/9/99/Star_icon_stylized.svg')
+		});
+		var geometry = new THREE.PlaneGeometry(10, 10*.75, {
+			size:40,
+
+
+		});
+
+		var s1 = new THREE.Mesh(geometry, material);
+		s1.position.set(-200,y_height,z_height);
+		camera.object3D.add(s1);
+
+		geometry = new THREE.PlaneGeometry(10, 10*.75);
+		var s2 = new THREE.Mesh(geometry, material);
+		s2.position.set(-180,y_height,z_height);
+		camera.object3D.add(s2);
+
+		geometry = new THREE.PlaneGeometry(10, 10*.75);
+		var s3 = new THREE.Mesh(geometry, material);
+		s3.position.set(-160,y_height,z_height);
+		camera.object3D.add(s3);
+
+    }
+
+
     function initial_text(){
 
-    	scene.object3D.remove(mesh);
+
     	var loader = new THREE.FontLoader();
 
 		loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
 
-			var textGeo = new THREE.TextBufferGeometry( "Welcome to the Asteroids\n              Press Enter!", {
+			var textGeo = new THREE.TextBufferGeometry( "Welcome to the Asteroids\n            Press Enter!", {
 						font: font,
 						size: 10,
 						height: 5,
@@ -109,14 +146,14 @@ window.onload = function() {
 				textGeo.computeBoundingBox();
 				var centerOffset = - 0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
 				var textMaterial = new THREE.MeshPhongMaterial( { color: 0xfff000, specular: 0xffffff } );
-				mesh_inicio = new THREE.Mesh( textGeo, textMaterial );
-				mesh_inicio.position.x = -80;//centerOffset;
-				mesh_inicio.position.y = 20;//-250 + 67;
-				mesh_inicio.position.z = -100;
-				mesh_inicio.castShadow = true;
-				mesh_inicio.receiveShadow = true;
-				scene.object3D.add( mesh_inicio );
-				//camera.object3D.add( mesh );
+				initial_msg = new THREE.Mesh( textGeo, textMaterial );
+				initial_msg.position.x = -80;//centerOffset;
+				initial_msg.position.y = 20;//-250 + 67;
+				initial_msg.position.z = -100;
+				initial_msg.castShadow = true;
+				initial_msg.receiveShadow = true;
+				scene.object3D.add( initial_msg );
+				//camera.object3D.add( score );
 				
 
 		} );
@@ -127,7 +164,7 @@ window.onload = function() {
 
     function change_score(){
 
-    	scene.object3D.remove(mesh);
+    	camera.object3D.remove(score);
     	var loader = new THREE.FontLoader();
 
 		loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
@@ -135,24 +172,24 @@ window.onload = function() {
 			var textGeo = new THREE.TextBufferGeometry( "Score: "+collisions, {
 						font: font,
 						size: 10,
-						height: 5,
-						curveSegments: 1.2,
+						height: 0.5,
+						curveSegments: 0.5,
 						bevelThickness: 0.2,
-						bevelSize: 0.5,
+						bevelSize: 0.1,
 						bevelEnabled: true
 			} );
 
 				textGeo.computeBoundingBox();
 				var centerOffset = - 0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
 				var textMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff } );
-				mesh = new THREE.Mesh( textGeo, textMaterial );
-				mesh.position.x = 100;//centerOffset;
-				mesh.position.y = 80;//-250 + 67;
-				mesh.position.z = -150;
-				mesh.castShadow = true;
-				mesh.receiveShadow = true;
-				scene.object3D.add( mesh );
-				//camera.object3D.add( mesh );
+				score = new THREE.Mesh( textGeo, textMaterial );
+				score.position.x = 140;//centerOffset;
+				score.position.y = y_height;//-250 + 67;
+				score.position.z = z_height;
+				score.castShadow = true;
+				score.receiveShadow = true;
+				camera.object3D.add( score );
+				//camera.object3D.add( score );
 				
 
 		} );
@@ -320,7 +357,7 @@ window.onload = function() {
       	console.log('Apertou O!');
       }
       if (evento.keyCode == 13){//enter
-      	  scene.object3D.remove(mesh_inicio);
+      	  scene.object3D.remove(initial_msg);
           running = true;
           console.log('Jogo iniciado!')
       }
