@@ -23,11 +23,16 @@ window.onload = function() {
     var asteroid_min_initial_distance = 200;
 
     var collisions = 0;
+    var ship_radius = 2;
 
     var y_height = 90;
     var z_height = -150;
 
     var running = false;
+
+    var bitmap;
+    var g;
+    var score_t;
 
     var asteroid_obj;
     var nave;
@@ -35,7 +40,11 @@ window.onload = function() {
     var score;
     var initial_msg;
 
+
     var laser_interval = 0;
+
+    var bateu = 0;
+
     
     /* ============================================================================================================= */
     /* criando a cena e adicionando o componente game_engine*/    
@@ -74,7 +83,7 @@ window.onload = function() {
         generate_target();
         console.log('Mira criada');
 
-        update_score();
+        update_score(true);
         console.log('Textos score criado');
 
         create_lives();
@@ -89,6 +98,7 @@ window.onload = function() {
             for(var i = 0; i < qt_asteroids; i++){
                 asteroids[i].translateZ(asteroid_speed);
                 asteroid_laser_collision(i);
+                asteroid_ship_collision(i);
             }
             for(var i = 0; i < lasers.length; i++){
                 lasers[i].object3D.translateZ(laser_speed);
@@ -96,33 +106,52 @@ window.onload = function() {
         }
     }
 
+    
+
+
+    var s1,s2,s3;
     function create_lives(){
 
     	var loader = new THREE.TextureLoader();
     	loader.setCrossOrigin('');
 
         var material = new THREE.MeshLambertMaterial({
-		  map: loader.load('https://upload.wikimedia.org/wikipedia/commons/9/99/Star_icon_stylized.svg')
+		  map: loader.load('https://upload.wikimedia.org/wikipedia/commons/9/99/Star_icon_stylized.svg'),
+		  transparent: true, 
+    	  opacity:1,
 		});
 
-        var geometry = new THREE.PlaneGeometry(10, 10*.75, {
+        var geometry = new THREE.PlaneGeometry(20, 20*.75, {
 			size:40,
 		});
 
-		var s1 = new THREE.Mesh(geometry, material);
-		s1.position.set(-200,y_height,z_height);
+		s1 = new THREE.Mesh(geometry, material);
+		s1.position.set(-220,y_height,z_height);
 		camera.object3D.add(s1);
 
-		geometry = new THREE.PlaneGeometry(10, 10*.75);
-		var s2 = new THREE.Mesh(geometry, material);
-		s2.position.set(-180,y_height,z_height);
+		s2 = new THREE.Mesh(geometry, material);
+		s2.position.set(-190,y_height,z_height);
 		camera.object3D.add(s2);
 
-		geometry = new THREE.PlaneGeometry(10, 10*.75);
-		var s3 = new THREE.Mesh(geometry, material);
+		s3 = new THREE.Mesh(geometry, material);
 		s3.position.set(-160,y_height,z_height);
 		camera.object3D.add(s3);
 
+    }
+
+    function update_lives(){
+    	if(bateu == 1){
+    		camera.object3D.remove(s3);
+    	}
+    	if(bateu == 2){
+    		camera.object3D.remove(s2);
+    	}
+    	if(bateu == 3){
+    		camera.object3D.remove(s1);
+    		console.log('PERDEU O GAME');
+    		running = false;
+    		end_game_text();
+    	}
     }
 
 
@@ -151,9 +180,72 @@ window.onload = function() {
 		} );
     }
 
+    function end_game_text(){
 
-    function update_score(){
+    	var loader = new THREE.FontLoader();
+		loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
+			var textGeo = new THREE.TextBufferGeometry( "       End game\nThanks for Playing", {
+                font: font,
+                size: 10,
+                height: 5,
+                align:'center',
+                curveSegments: 1.2,
+                bevelThickness: 0.2,
+                bevelSize: 0.5,
+                bevelEnabled: true
+			});
+            textGeo.computeBoundingBox();
+            var textMaterial = new THREE.MeshPhongMaterial( { color: 0xfff000, specular: 0xffffff } );
+            initial_msg = new THREE.Mesh( textGeo, textMaterial );
+            initial_msg.position.x = -50;
+            initial_msg.position.y = 20;
+            initial_msg.position.z = -100;
+            initial_msg.castShadow = true;
+            initial_msg.receiveShadow = true;
+            camera.object3D.add( initial_msg );
+		} );
+    }
 
+
+    function update_score(isInitial = false){
+    	if(!isInitial){
+    		camera.object3D.remove( score );
+    	}
+    	
+
+    	bitmap = document.createElement('canvas');
+		g = bitmap.getContext('2d');
+		bitmap.width = 120;
+		bitmap.height = 100;
+		g.font = 'Bold 25px Arial';
+
+		g.fillStyle = 'red';
+		g.fillText('Score '+collisions, 0, 20);
+		g.strokeStyle = 'black';
+		//g.strokeText('nada', 0, 20);
+
+		// canvas contents will be used for a texture
+		score_t = new THREE.Texture(bitmap) 
+		score_t.needsUpdate = true;
+
+		var material = new THREE.MeshBasicMaterial({
+    		map: score_t,
+    		transparent: true, 
+    		opacity:1,
+		});
+		var geometry = new THREE.PlaneGeometry(100, 100*.75, {
+			size:100,
+		});
+		score = new THREE.Mesh(geometry, material);
+		score.position.set(160,y_height-30,z_height);
+		score.geometry.dynamic = true;
+		score.geometry.verticesNeedUpdate = true;
+
+
+		camera.object3D.add( score );
+
+
+    	/*
     	camera.object3D.remove(score);
     	var loader = new THREE.FontLoader();
 
@@ -177,6 +269,7 @@ window.onload = function() {
             score.receiveShadow = true;
             camera.object3D.add( score );
 		} );
+		*/
     }
 
     function asteroid_laser_collision(asteroid){
@@ -191,6 +284,18 @@ window.onload = function() {
                 posionar_asteroid(asteroids[asteroid]);
     		}
     	}
+    }
+
+    function asteroid_ship_collision(asteroid){
+    	var distance;
+		distance = Math.sqrt(Math.pow(asteroids[asteroid].position.x-nave.position.x,2)+Math.pow(asteroids[asteroid].position.y-nave.position.y,2)
+		+Math.pow(asteroids[asteroid].position.z-nave.position.z,2));
+		if(distance < ship_radius && asteroids[asteroid].visible == true){
+			console.log("Colidiu asteroid nave");
+			bateu++;
+			update_lives();
+			posionar_asteroid(asteroids[asteroid]);
+		}
     }
 
     function load_materials(){
