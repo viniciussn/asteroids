@@ -236,13 +236,13 @@ window.onload = function() {
 
     function generate_objects(){
         /* ASTEROIDS */
-        // for(var i=0; i<qt_asteroids; i++){
-        //     var asteroid = asteroid_obj.clone();
-        //     posionar_asteroid(asteroid);
-        //     asteroid.scale.set(asteroid_radius, asteroid_radius, asteroid_radius);
-        //     scene.object3D.add(asteroid);
-        //     asteroids.push(asteroid);
-        // } 
+        for(var i=0; i<qt_asteroids; i++){
+            var asteroid = asteroid_obj.clone();
+            posionar_asteroid(asteroid);
+            asteroid.scale.set(asteroid_radius, asteroid_radius, asteroid_radius);
+            scene.object3D.add(asteroid);
+            asteroids.push(asteroid);
+        } 
 
 
         /* NAVE */
@@ -270,7 +270,6 @@ window.onload = function() {
             var x = Math.random() * 10000 - 5000;
             var y = Math.random() * 10000 - 5000;
             var z = Math.random() * 100000 -50000;
-            console.log(x);
             if(z<1000 && z>0)
                 z=5000;
             else if (z<0 && z>-1000) z=-5000;
@@ -279,7 +278,7 @@ window.onload = function() {
             
             sphere.setAttribute('radius', 4);
             sphere.setAttribute('color', '#ffffff');
-            camera.appendChild(sphere);
+            scene.appendChild(sphere);
             
         }
     }
