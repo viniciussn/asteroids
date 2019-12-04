@@ -51,7 +51,8 @@ window.onload = function() {
     scene.appendChild(camera);
     /* ============================================================================================================= */
     /* criando céu */        
-    ceu.setAttribute('color', '#000000');
+    ceu.setAttribute('src', 'space.jpg');
+    // ceu.setAttribute('color', '#000000');
     scene.appendChild(ceu);
 
 
@@ -61,7 +62,6 @@ window.onload = function() {
     
     function game_init(){
         
-        generate_stars();
         console.log('Carregando texturas...');    
         load_materials().then(function(){
             console.log('Texturas carregadas!');    
@@ -262,25 +262,6 @@ window.onload = function() {
         asteroid.lookAt(nave.position.x, nave.position.y, nave.position.z);
         
         asteroid.translateZ(-asteroid_min_initial_distance);
-    }
-
-    function generate_stars(){
-        for(var i=0; i<5000; i++){
-            var sphere = document.createElement('a-sphere');
-            var x = Math.random() * 10000 - 5000;
-            var y = Math.random() * 10000 - 5000;
-            var z = Math.random() * 100000 -50000;
-            if(z<1000 && z>0)
-                z=5000;
-            else if (z<0 && z>-1000) z=-5000;
-            sphere.object3D.position.set(x, y, z);
-            sphere.object3D.lookAt(0, 0, 0);
-            
-            sphere.setAttribute('radius', 4);
-            sphere.setAttribute('color', '#ffffff');
-            scene.appendChild(sphere);
-            
-        }
     }
 
     function generate_target(){
