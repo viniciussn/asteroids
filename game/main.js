@@ -250,6 +250,10 @@ window.onload = function() {
         nave.updateMatrix();
         nave.rotation.set(0,  Math.PI, 0);                
         camera.object3D.add(nave);
+
+        var light = new THREE.PointLight( 0x4842F6, 1, 100 );
+        light.position.set(0, 0, 0);
+        nave.add(light);
        
     }
 
@@ -297,6 +301,8 @@ window.onload = function() {
         laser.object3D.translateX(-2);
         laser.object3D.translateY(-0.7);
         laser.object3D.translateZ(2.6); //a ponta do canhão é 3.6
+
+       
 
         //Laser Direita 
         var laser2 = document.createElement('a-sphere');
