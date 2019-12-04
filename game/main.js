@@ -35,6 +35,7 @@ window.onload = function() {
     var score;
     var initial_msg;
 
+    var laser_interval = 0;
     
     /* ============================================================================================================= */
     /* criando a cena e adicionando o componente game_engine*/    
@@ -251,8 +252,8 @@ window.onload = function() {
         nave.rotation.set(0,  Math.PI, 0);                
         camera.object3D.add(nave);
 
-        var light = new THREE.PointLight( 0x4842F6, 1, 100 );
-        light.position.set(0, 0, 0);
+        var light = new THREE.PointLight( 0x4842F6, 3, 100 );
+        light.position.set(0, 0, 2);
         nave.add(light);
        
     }
@@ -297,7 +298,9 @@ window.onload = function() {
         laser.object3D.position.x = camera.object3D.position.x;
         laser.object3D.position.y = camera.object3D.position.y;
         laser.object3D.position.z = camera.object3D.position.z;
-        
+
+        laser.setAttribute('scale', '1 1 20');
+
         laser.object3D.translateX(-2);
         laser.object3D.translateY(-0.7);
         laser.object3D.translateZ(2.6); //a ponta do canhão é 3.6
@@ -315,6 +318,8 @@ window.onload = function() {
         laser2.object3D.position.x = camera.object3D.position.x;
         laser2.object3D.position.y = camera.object3D.position.y;
         laser2.object3D.position.z = camera.object3D.position.z;
+
+        laser2.setAttribute('scale', '1 1 20');
 
         laser2.object3D.translateX(2);
         laser2.object3D.translateY(-0.7);
