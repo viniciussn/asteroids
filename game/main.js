@@ -26,7 +26,7 @@ window.onload = function() {
     var asteroid_lookat_range = 100;
 
     var collisions = 0;
-    var ship_radius = 2;
+    var ship_radius = 4;
 
     var y_height = 90;
     var z_height = -150;
@@ -423,12 +423,12 @@ window.onload = function() {
             running = true;
             console.log('Jogo iniciado!')
         }
-        if (evento.keyCode == 32){
+        if (evento.keyCode == 32){//space
             if(running){
                 disparar();
             }
         }
-        if (evento.keyCode == 67){
+        if (evento.keyCode == 67){//c
             change_camera();
         }        
 	}
