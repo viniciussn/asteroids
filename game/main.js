@@ -44,6 +44,7 @@ window.onload = function() {
 
     var bateu = 0;
 
+    var camera_type = 0;
     
     /* ============================================================================================================= */
     /* criando a cena e adicionando o componente game_engine*/    
@@ -405,6 +406,16 @@ window.onload = function() {
 
     }
 
+    function change_camera(){
+        if(camera_type == 0){
+            nave.position.set(0, -1, -8);
+            camera_type = 1;
+        }else{
+            nave.position.set(0, 0, 2);
+            camera_type = 0;
+        }
+    }
+
     function press_keyboard(evento) {
         if (evento.keyCode == 13){//enter
             scene.object3D.remove(initial_msg);
@@ -416,10 +427,9 @@ window.onload = function() {
                 disparar();
             }
         }
+        if (evento.keyCode == 67){
+            change_camera();
+        }        
 	}
-
-
-
-
 };
 
