@@ -15,12 +15,14 @@ window.onload = function() {
     var laser_speed = 10;
 
     var asteroids = [];
-    var qt_asteroids = 100;
+    var qt_asteroids = 500;
     var asteroid_radius = 5;
     var asteroid_speed = 0.5;
     var asteroid_min_origem = -100;
     var asteroid_max_origem = 100;
     var asteroid_min_initial_distance = 200;
+    var asteroid_max_nave_distance = 500;
+    var asteroid_lookat_range = 100;
 
     var collisions = 0;
     var ship_radius = 2;
@@ -39,9 +41,6 @@ window.onload = function() {
 
     var score;
     var initial_msg;
-
-
-    var laser_interval = 0;
 
     var bateu = 0;
 
@@ -64,9 +63,6 @@ window.onload = function() {
     ceu.setAttribute('src', 'space.jpg');
     // ceu.setAttribute('color', '#000000');
     scene.appendChild(ceu);
-
-
-
 
     document.onkeydown = press_keyboard;
     
@@ -105,9 +101,6 @@ window.onload = function() {
             }
         }
     }
-
-    
-
 
     var s1,s2,s3;
     function create_lives(){
@@ -211,7 +204,6 @@ window.onload = function() {
     	if(!isInitial){
     		camera.object3D.remove( score );
     	}
-    	
 
     	bitmap = document.createElement('canvas');
 		g = bitmap.getContext('2d');
@@ -222,7 +214,6 @@ window.onload = function() {
 		g.fillStyle = 'red';
 		g.fillText('Score '+collisions, 0, 20);
 		g.strokeStyle = 'black';
-		//g.strokeText('nada', 0, 20);
 
 		// canvas contents will be used for a texture
 		score_t = new THREE.Texture(bitmap) 
@@ -241,35 +232,7 @@ window.onload = function() {
 		score.geometry.dynamic = true;
 		score.geometry.verticesNeedUpdate = true;
 
-
-		camera.object3D.add( score );
-
-
-    	/*
-    	camera.object3D.remove(score);
-    	var loader = new THREE.FontLoader();
-
-		loader.load( 'fonts/helvetiker_regular.typeface.json', function ( font ) {
-			var textGeo = new THREE.TextBufferGeometry( "Score: "+collisions, {
-                font: font,
-                size: 10,
-                height: 0.5,
-                curveSegments: 0.5,
-                bevelThickness: 0.2,
-                bevelSize: 0.1,
-                bevelEnabled: true
-			} );
-            textGeo.computeBoundingBox();
-            var textMaterial = new THREE.MeshPhongMaterial( { color: 0xff0000, specular: 0xffffff } );
-            score = new THREE.Mesh( textGeo, textMaterial );
-            score.position.x = 140;//centerOffset;
-            score.position.y = y_height;//-250 + 67;
-            score.position.z = z_height;
-            score.castShadow = true;
-            score.receiveShadow = true;
-            camera.object3D.add( score );
-		} );
-		*/
+        camera.object3D.add( score );
     }
 
     function asteroid_laser_collision(asteroid){
@@ -288,15 +251,18 @@ window.onload = function() {
 
     function asteroid_ship_collision(asteroid){
     	var distance;
-		distance = Math.sqrt(Math.pow(asteroids[asteroid].position.x-nave.position.x,2)+Math.pow(asteroids[asteroid].position.y-nave.position.y,2)
-		+Math.pow(asteroids[asteroid].position.z-nave.position.z,2));
+		distance = Math.sqrt(Math.pow(asteroids[asteroid].position.x-camera.object3D.position.x,2)+Math.pow(asteroids[asteroid].position.y-camera.object3D.position.y,2)
+		+Math.pow(asteroids[asteroid].position.z-camera.object3D.position.z,2));
 		if(distance < ship_radius && asteroids[asteroid].visible == true){
 			console.log("Colidiu asteroid nave");
 			bateu++;
 			update_lives();
 			posionar_asteroid(asteroids[asteroid]);
-		}
+        }else if(distance>=asteroid_max_nave_distance){
+            posionar_asteroid(asteroids[asteroid]);
+        }
     }
+
 
     function load_materials(){
         var promises = [];
@@ -364,12 +330,14 @@ window.onload = function() {
     }
 
     function posionar_asteroid(asteroid){
-        var x = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
-        var y = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
-        var z = Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
+        var x = camera.object3D.position.x + Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
+        var y = camera.object3D.position.y + Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
+        var z = camera.object3D.position.z + Math.random() * (asteroid_max_origem - asteroid_min_origem) + asteroid_min_origem;
         
         asteroid.position.set(x, y, z);
-        asteroid.lookAt(nave.position.x, nave.position.y, nave.position.z);
+        asteroid.lookAt(camera.object3D.position.x + Math.random()* asteroid_lookat_range*2 - asteroid_lookat_range,
+            camera.object3D.position.y + Math.random()* asteroid_lookat_range*2 - asteroid_lookat_range,
+            camera.object3D.position.z + Math.random()* asteroid_lookat_range*2 - asteroid_lookat_range);
         
         asteroid.translateZ(-asteroid_min_initial_distance);
     }
@@ -438,18 +406,16 @@ window.onload = function() {
     }
 
     function press_keyboard(evento) {
-      if (String.fromCharCode(evento.keyCode) == 'O'){
-      	console.log('Apertou O!');
-      }
-      if (evento.keyCode == 13){//enter
-      	  scene.object3D.remove(initial_msg);
-          running = true;
-          console.log('Jogo iniciado!')
-      }
-      if (evento.keyCode == 32){
-          //console.log('Piu!');
-          disparar();
-      }
+        if (evento.keyCode == 13){//enter
+            scene.object3D.remove(initial_msg);
+            running = true;
+            console.log('Jogo iniciado!')
+        }
+        if (evento.keyCode == 32){
+            if(running){
+                disparar();
+            }
+        }
 	}
 
 
