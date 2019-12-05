@@ -1,4 +1,5 @@
 window.onload = function() {
+    this.alert("COMANDOS:\nBarra De Espaço -> Atirar\nC -> Alterar Câmera");
     /* ============================================================================================================= */
     /* criando componente game_engine, responsável pela lógica do jogo*/ 
     AFRAME.registerComponent('game_engine', {
